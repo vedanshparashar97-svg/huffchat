@@ -12,7 +12,7 @@ size, with live compression statistics shown to the user.
 
 ## Tech Stack
 - **Backend:** C++, cpp-httplib, nlohmann/json
-- **Frontend:** HTML, CSS, JavaScript
+- **Frontend:** HTML, CSS
 - **Storage:** CSV (for message/frequency data)
 
 ## Features (Planned)
@@ -27,7 +27,7 @@ size, with live compression statistics shown to the user.
 🚧 In development — Phase-I (Proposal & Design)
 
 ## Team — Tarnished Coders
-- Vedansh Parashar (Lead) — partial Frontend, backend, documentation
-- Srijan Parashar — Backend
-- Saket Pravin Chandure — Database, backend
-- Pramesh Singh Dhaila — Backend, testing
+- Vedansh Parashar (Lead) — API, Partial  backend, documentation Engineer
+- Srijan Parashar — Frontend and Testing Engineer
+- Saket Pravin Chandure — Algorithm backend Engineer
+- Pramesh Singh Dhaila — Backend logic Engineer
