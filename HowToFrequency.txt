@@ -1,0 +1,3 @@
+To access the Frequency counting function use:
+#include "frequency_map.h"
+  ->buildFrequencyMap()  (function returns an unordered map)
