@@ -1,0 +1,7 @@
+HOW TO USE ENCODE AND DECODE IN YOUR FUNCTION..
+1st include it:
+#include "EncoderDecoder.h"
+2nd call the functions while sending the actual msg and codes in encode and the encoded string and tree's root in decode:
+std::string encoded = encode(message, codes);
+std::string decoded = decode(encoded, root);
+Thanks!
