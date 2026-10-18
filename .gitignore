@@ -1,0 +1,12 @@
+# Compiled executables
+huffchat_test
+huffchat_test.exe
+*.o
+
+# Generated runtime history
+history.csv
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
