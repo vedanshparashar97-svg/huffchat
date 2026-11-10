@@ -26,7 +26,7 @@ int main() {
         cout << "Round trip: " << (back == msg ? "PASS" : "FAIL") << "\n\n";
 
         appendHistory(r);
-        deleteTree(r.root);   // free the tree once we're done with it
+        deleteTree(r.root);  
     }
 
     cout << "--- history.csv ---\n";
