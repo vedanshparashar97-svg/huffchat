@@ -1,106 +1,103 @@
+# HuffChat — Huffman Compression Studio
 
-# HuffChat — Real-Time Message Compression Using Huffman Coding
+A local browser-based demonstration of lossless Huffman compression. The interface is HTML/CSS/JavaScript; the compression and decompression engine is C++17. A small Python standard-library server connects the browser to the compiled C++ engine.
 
-HuffChat is a C++ project that demonstrates how Huffman coding can compress text into a variable-length binary representation and reconstruct the original text through decoding.
+## Features
 
-The project is being developed in phases. The current phase focuses on the Huffman compression engine, compression statistics, and CSV-based history storage. A chat-style interface and HTTP API are planned for a later phase.
+- Type or paste text and compress it with Huffman coding.
+- View original bytes, logical Huffman bits, complete archive bytes, actual size change, and processing time.
+- Decompress the generated archive and verify an exact text round trip.
+- Upload `.txt` files and download a compressed `.huff` archive.
+- Upload `.huff` archives and restore the original `.txt` bytes.
+- Local CSV operation history.
+- Binary-safe archive format with a frequency table, original byte count, logical bit count, and FNV-1a integrity check.
+- Deterministic Huffman tree construction and validation of incomplete/corrupt streams.
 
-## Current Features
+## Requirements
 
-- Character frequency counting
-- Huffman tree construction using a priority queue
-- Huffman code generation
-- Text encoding and decoding
-- Compression statistics:
-  - Original size in bits
-  - Encoded size in bits
-  - Percentage of bits saved
-  - Compression execution time
-- CSV history storage for compression statistics
-- Round-trip tests for normal text, repeated characters, empty input, and longer text
+- Linux (tested in the supplied development environment), macOS, or another POSIX-like environment.
+- Python 3.9+.
+- g++ with C++17 support.
+- No external Python packages, JavaScript packages, or C++ libraries are required.
 
-## Technology Stack
+## Run on Arch Linux
 
-- **Language:** C++17
-- **Core:** Huffman coding implemented in C++
-- **Data storage:** CSV
-- **Planned web server:** cpp-httplib
-- **Planned JSON handling:** nlohmann/json
-- **Planned frontend:** HTML, CSS, and JavaScript
+Open a terminal in this project folder and build the C++ engine:
 
-## Project Structure
+```bash
+chmod +x build.sh test.sh
+./build.sh
+```
+
+Start the local web server:
+
+```bash
+python3 server.py
+```
+
+Open this address in your browser:
+
+```text
+http://127.0.0.1:8000
+```
+
+Stop the server with `Ctrl+C`.
+
+## Run tests
+
+In another terminal, run:
+
+```bash
+./test.sh
+```
+
+The tests cover ordinary text, a single repeated byte, empty input, UTF-8 text, all 256 byte values, and rejection of a corrupted archive.
+
+## Archive format (`.huff`)
+
+All multi-byte integers are little-endian. The archive contains:
+
+1. Four-byte magic identifier `HUF1`.
+2. Original uncompressed byte count (64-bit).
+3. Number of meaningful Huffman bits (64-bit).
+4. FNV-1a checksum of original bytes (64-bit).
+5. Number of distinct byte symbols (16-bit).
+6. For each symbol: one byte symbol value and its 64-bit frequency.
+7. Huffman payload, packed most-significant-bit first; unused trailing bits are zero padding.
+
+The decoder rebuilds the deterministic Huffman tree from the frequency table. It checks expected output length, stream completion, and checksum before accepting the restored data.
+
+## Understanding the statistics
+
+- **Logical Huffman bits** count only the code bits assigned to the original bytes.
+- **Packed payload bytes** are approximately `ceil(logical bits / 8)`.
+- **Archive bytes** include the header, frequency table, checksum, and packed payload. This is the size that is actually downloaded.
+- **Actual size change** compares complete archive bytes with original bytes. A negative saving means the archive is larger than the input; this is normal for short or high-entropy data because metadata has a cost.
+- Input is treated as bytes. UTF-8 text is compressed byte-by-byte, then restored byte-for-byte.
+
+## Limits and security
+
+- The browser server listens only on `127.0.0.1` and is intended for local demonstrations, not public hosting.
+- Upload request limit: 25 MB. Decompression output limit: 100 MB.
+- The app does not encrypt data or provide user authentication. Huffman coding is compression, not encryption.
+- `history.csv` stores operation metadata, not the user's message contents.
+- The archive checksum detects accidental corruption; it is not a cryptographic authenticity guarantee.
+
+## Project layout
 
 ```text
 huffchat/
-├── EncoderDecoder.cpp
-├── EncoderDecoder.h
-├── frequency_map.cpp
-├── frequency_map.h
-├── HuffmanNode.h
-├── TreeBuilder.cpp
-├── TreeBuilder.h
-├── HuffmanCompressor.cpp
-├── HuffmanCompressor.h
-├── HistoryStore.cpp
-├── HistoryStore.h
-├── main.cpp
-├── README.md
-└── .gitignore
+├── web/
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+├── huffman_cli.cpp
+├── huffchat_cli        # generated by build.sh; do not commit
+├── server.py
+├── build.sh
+├── test.sh
+├── history.csv         # generated at runtime
+└── README.md
 ```
 
-## Build and Run
-
-Compile the current core implementation from the project directory:
-
-```bash
-g++ -std=c++17 main.cpp frequency_map.cpp TreeBuilder.cpp EncoderDecoder.cpp HuffmanCompressor.cpp HistoryStore.cpp -o huffchat_test
-```
-
-Run the test/demo program:
-
-```bash
-./huffchat_test
-```
-
-The program demonstrates compression, decompression, statistics, and CSV history output.
-
-## Compression Statistics
-
-The original size is calculated using 8 bits per input character. The encoded size is the length of the Huffman bit string.
-
-The reported percentage saved compares these two sizes. It does not include the code table or other metadata that would be required to transmit a complete compressed representation.
-
-## CSV History
-
-The history store records:
-
-- Timestamp
-- Original size in bits
-- Encoded size in bits
-- Percentage saved
-- Compression time in milliseconds
-
-The CSV stores compression statistics rather than the original message text. The runtime `history.csv` file is excluded from Git.
-
-## Planned Work
-
-- HTTP endpoints for compression, decompression, and history
-- Chat-style frontend using HTML, CSS, and JavaScript
-- Frontend integration with the C++ backend
-- Text-file upload support
-- Further validation and end-to-end testing
-
-These features are planned and should not be considered complete until implemented and tested.
-
-## Team — Tarnished Coders
-
-- **Vedansh Parashar** — Project lead, compressor wrapper, statistics, CSV history, and documentation
-- **Srijan Parashar** — Frontend and testing
-- **Saket Pravin Chandure** — Huffman tree and algorithm backend
-- **Pramesh Singh Dhaila** — Frequency map, encoding, and decoding
-
-## Project Status
-
-**Current phase:** Huffman compression engine and CSV history storage.
-
-The core has compiled successfully in the development environment, and the current demo has passed four round-trip test cases. Web integration and end-to-end chat functionality remain future work.
+The original team Huffman source files (`HuffmanCompressor.*`, `TreeBuilder.*`, `EncoderDecoder.*`, `frequency_map.*`, and related notes) are retained in the repository as the initial implementation/reference. The web application uses the hardened standalone C++17 engine in `huffman_cli.cpp` so the file format and byte-level validation are explicit and self-contained.
