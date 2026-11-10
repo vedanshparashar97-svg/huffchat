@@ -1,1 +1,71 @@
-<!-- Web project -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1020"><title>HuffChat — Compression Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="ambient a1"></div><div class="ambient a2"></div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="#"><span class="brand-mark">H<span>∿</span></span><span>huff<span class="brand-light">chat</span><small>COMPRESSION STUDIO</small></span></a>
+    <div class="side-label">WORKSPACE</div>
+    <button class="nav-item active" data-tab="text"><span>⌁</span> Text lab <kbd>01</kbd></button>
+    <button class="nav-item" data-tab="files"><span>▤</span> File compressor <kbd>02</kbd></button>
+    <button class="nav-item" data-tab="history"><span>◷</span> History <kbd>03</kbd></button>
+    <div class="sidebar-bottom"><div class="engine-card"><span class="pulse"></span><div><b>Engine online</b><small>C++17 · Huffman coding</small></div></div><div class="side-foot">BUILT TO MAKE DATA LIGHTER</div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><div class="eyebrow">HUFFMAN ENCODING / DECODING</div><h1 id="pageTitle">Text compression lab<span class="title-dot">.</span></h1></div><div class="top-status"><span class="pulse"></span> LOCAL ENGINE <span class="divider-v"></span><span id="clock">READY</span></div></header>
+
+    <section class="view active" id="view-text">
+      <div class="intro-row"><div><h2>Make every bit count.</h2><p>Type or paste a message. Watch Huffman coding turn frequent characters into shorter bit patterns.</p></div><div class="algorithm-pill"><span>✳</span> LOSSLESS COMPRESSION</div></div>
+      <div class="workspace-grid">
+        <section class="panel editor-panel">
+          <div class="panel-head"><div><span class="step">01</span><b>YOUR MESSAGE</b></div><span class="live-tag"><i></i> LIVE INPUT</span></div>
+          <textarea id="message" spellcheck="false" placeholder="Start typing something worth compressing…&#10;&#10;Try repeating words or phrases to see Huffman coding shine."></textarea>
+          <div class="editor-foot"><span id="charCount">0 characters</span><button class="text-button" id="sampleBtn">Load sample ↗</button><button class="text-button" id="clearBtn">Clear</button></div>
+          <div class="action-row"><button class="primary-btn" id="compressBtn"><span>Compress message</span><b>↗</b></button><button class="secondary-btn" id="decodeBtn" disabled>Decompress ↗</button></div>
+          <div class="feedback" id="textFeedback" aria-live="polite">Enter a message to begin. Your text stays on this computer.</div>
+        </section>
+        <section class="panel stats-panel">
+          <div class="panel-head"><div><span class="step">02</span><b>COMPRESSION ANALYSIS</b></div><span class="muted-label">AFTER COMPRESSION</span></div>
+          <div class="saving-block"><div><span class="metric-label">ACTUAL ARCHIVE SAVING</span><div class="saving-number" id="savingPct">—<small>%</small></div></div><div class="saving-ring" id="savingRing"><div><b id="ringValue">—</b><small>saved</small></div></div></div>
+          <div class="bar-compare"><div class="bar-label"><span>Original text</span><b id="originalSize">—</b></div><div class="bar-track"><div class="bar-fill original" id="originalBar"></div></div><div class="bar-label"><span>Compressed archive</span><b id="archiveSize">—</b></div><div class="bar-track"><div class="bar-fill compressed" id="archiveBar"></div></div></div>
+          <div class="stat-grid"><div class="stat-tile"><small>LOGICAL HUFFMAN BITS</small><b id="logicalBits">—</b></div><div class="stat-tile"><small>ARCHIVE OVERHEAD</small><b id="overhead">—</b></div><div class="stat-tile"><small>PROCESS TIME</small><b id="processTime">—</b></div><div class="stat-tile"><small>INPUT SIZE</small><b id="inputSize">—</b></div></div>
+          <div class="result-download" id="textDownload"><div><b>Compressed archive ready</b><small>Download the complete .huff file, including its decoding table.</small></div><button id="downloadText" class="download-btn" disabled>↓ Download .huff</button></div>
+          <p class="fineprint">Actual saving includes the HuffChat header and frequency table. Small messages may become larger because compression has overhead.</p>
+        </section>
+      </div>
+      <section class="panel code-panel"><div class="panel-head"><div><span class="step">03</span><b>HOW THE MESSAGE IS ENCODED</b></div><span class="muted-label">BYTE-BASED HUFFMAN TREE</span></div><div id="codePreview" class="code-preview"><div class="empty-state">The archive stores a byte-frequency table so the exact Huffman tree can be rebuilt during decompression.</div></div></section>
+      <section class="panel decoded-panel" id="decodedPanel" hidden><div class="panel-head"><div><span class="step">04</span><b>ROUND-TRIP VERIFICATION</b></div><span class="verified">✓ VERIFIED</span></div><div class="decoded-content" id="decodedText"></div></section>
+    </section>
+
+    <section class="view" id="view-files">
+      <div class="intro-row"><div><h2>Compress the whole thing.</h2><p>Drop in a plain-text file and get a real HuffChat archive. Restore it whenever you need the original.</p></div><div class="algorithm-pill"><span>▧</span> FILE WORKFLOW</div></div>
+      <div class="file-grid">
+        <section class="panel file-panel"><div class="panel-head"><div><span class="step">01</span><b>COMPRESS A .TXT FILE</b></div><span class="file-type">TXT → HUFF</span></div>
+          <label class="dropzone" id="txtDrop"><input type="file" id="txtFile" accept=".txt,text/plain"><span class="upload-icon">↑</span><b>Drop your .txt file here</b><small>or <u>browse files</u> · up to 25 MB</small><span class="picked-file" id="txtPicked">No file selected</span></label>
+          <button class="primary-btn full" id="fileCompressBtn" disabled>Compress & download <b>↗</b></button><div class="feedback" id="fileCompressFeedback">Your original file is never modified.</div>
+        </section>
+        <section class="panel file-panel"><div class="panel-head"><div><span class="step">02</span><b>RESTORE A .HUFF FILE</b></div><span class="file-type restore">HUFF → TXT</span></div>
+          <label class="dropzone restore-zone" id="huffDrop"><input type="file" id="huffFile" accept=".huff,application/octet-stream"><span class="upload-icon">↧</span><b>Drop a .huff archive here</b><small>or <u>browse files</u> · up to 25 MB</small><span class="picked-file" id="huffPicked">No file selected</span></label>
+          <button class="secondary-btn full" id="fileDecompressBtn" disabled>Restore & download .txt <b>↗</b></button><div class="feedback" id="fileDecompressFeedback">Integrity is checked before the restored file is returned.</div>
+        </section>
+      </div>
+      <div class="notice"><span>✦</span><div><b>Why .huff instead of .txt?</b><p>The compressed archive contains packed bits plus the frequency table and integrity metadata needed to restore your exact original bytes. It is not a human-readable text document.</p></div></div>
+    </section>
+
+    <section class="view" id="view-history">
+      <div class="intro-row"><div><h2>Your compression trail.</h2><p>A local log of recent operations performed by this browser app.</p></div><button class="secondary-btn" id="refreshHistory">↻ Refresh history</button></div>
+      <section class="panel history-panel"><div class="panel-head"><div><span class="step">LOG</span><b>RECENT OPERATIONS</b></div><span class="muted-label">LAST 50 ENTRIES</span></div><div class="history-table-wrap"><table><thead><tr><th>TIME</th><th>OPERATION</th><th>FILE / INPUT</th><th>ORIGINAL</th><th>ARCHIVE</th><th>SAVED</th></tr></thead><tbody id="historyRows"><tr><td colspan="6" class="empty-table">No history yet. Compress something to get started.</td></tr></tbody></table></div></section>
+    </section>
+    <footer><span>HUFFCHAT <b>·</b> A HUFFMAN CODING PROJECT</span><span>LOSSLESS BY DESIGN <b>✳</b></span></footer>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/app.js"></script>
+</body></html>
